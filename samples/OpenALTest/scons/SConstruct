@@ -1,0 +1,13 @@
+import os
+
+env = Environment(ENV = {'PATH' : os.environ['PATH']})
+
+env['APP_TARGET'] = 'OpenALTest'
+env['APP_SOURCES'] = ['OpenALTest.cpp']
+env['ASSETS'] = ['sample.ogg']
+env['DEBUG'] = 0
+
+# Cinder-OpenAL
+env = SConscript('../../../scons/SConscript', exports = 'env')
+
+SConscript('../../../../../scons/SConscript', exports = 'env')

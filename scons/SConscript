@@ -1,0 +1,49 @@
+Import('env')
+import os
+
+env.Append(PATH = os.environ['PATH'])
+
+_INCLUDES = [Dir('../src').abspath]
+
+_SOURCES = ['OpenALAudio.cpp']
+_SOURCES = [File('../src/' + s).abspath for s in _SOURCES]
+
+if env['PLATFORM'] == 'darwin':
+	env.Append(FRAMEWORKS = ['OpenAL'])
+
+# libvorbis config with pkg-config
+def CheckPKGConfig(context, version):
+	context.Message( 'Checking for pkg-config... ' )
+	ret = context.TryAction('pkg-config --atleast-pkgconfig-version=%s' % version)[0]
+	context.Result(ret)
+	return ret
+
+def CheckPKG(context, name):
+	context.Message('Checking for %s... ' % name)
+	ret = context.TryAction("pkg-config --exists '%s'" % name)[0]
+	context.Result(ret)
+	return ret
+
+if (not GetOption('clean')):
+    conf = env.Configure(custom_tests = { 'CheckPKGConfig' : CheckPKGConfig,
+                                          'CheckPKG' : CheckPKG })
+    if not conf.CheckPKGConfig('0.15'):
+        print 'ERROR: pkg-config not found.'
+        Exit(1)
+
+    LIBS = ['vorbis', 'vorbisfile']
+
+    for lib in LIBS:
+        if not conf.CheckPKG(lib):
+            print "ERROR: '%s' must be installed!" % (lib)
+            Exit(1)
+        else:
+            env.ParseConfig('pkg-config --cflags --libs %s' % (lib))
+
+    env = conf.Finish()
+
+env.Append(APP_SOURCES = _SOURCES)
+env.Append(CPPPATH = _INCLUDES)
+
+Return('env')
+
