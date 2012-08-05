@@ -40,6 +40,7 @@ class OpenALAudio
 
 		unsigned load( const ci::fs::path &filename );
 		void play( unsigned bufferId, float volume = 1.f, bool looping = false );
+		void stop( unsigned bufferId );
 
 	private:
 		unsigned mPoly;
