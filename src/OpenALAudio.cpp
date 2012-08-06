@@ -78,17 +78,17 @@ void OpenALAudio::play( unsigned bufferId, float volume /* = 1.f */, bool loopin
 
 void OpenALAudio::stop( unsigned bufferId )
 {
-	// find the next free source
-	for( int source = 0; source < mPoly; ++source )
+	// find the source of the bufferId
+	for ( int source = 0; source < mPoly; ++source )
 	{
 		ALint value;
 		alGetSourcei( mSources[ source ], AL_BUFFER, &value );
 
-		if( value == bufferId )
+		if ( value == bufferId )
 		{
 			ALint state;
 			alGetSourcei( mSources[ source ], AL_SOURCE_STATE, &state );
-			if( state == AL_PLAYING )
+			if ( state == AL_PLAYING )
 			{
 				unsigned sourceId = mSources[ source ];
 				alSourceStop( sourceId );

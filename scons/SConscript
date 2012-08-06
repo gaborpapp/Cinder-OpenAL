@@ -1,6 +1,7 @@
 Import('env')
 import os
 
+# FIXME: env should be created with the path, with this pkg-config is not found
 env.Append(PATH = os.environ['PATH'])
 
 _INCLUDES = [Dir('../src').abspath]
@@ -8,8 +9,13 @@ _INCLUDES = [Dir('../src').abspath]
 _SOURCES = ['OpenALAudio.cpp']
 _SOURCES = [File('../src/' + s).abspath for s in _SOURCES]
 
+_LIBS = ['libopenal.a']
 if env['PLATFORM'] == 'darwin':
-	env.Append(FRAMEWORKS = ['OpenAL'])
+	_LIBS = [Dir('../lib/macosx/').abspath + '/' + s for s in _LIBS]
+else:
+	_LIBS = []
+
+_LIBS = [File(s) for s in _LIBS]
 
 # libvorbis config with pkg-config
 def CheckPKGConfig(context, version):
@@ -44,6 +50,7 @@ if (not GetOption('clean')):
 
 env.Append(APP_SOURCES = _SOURCES)
 env.Append(CPPPATH = _INCLUDES)
+env.Append(LIBS = _LIBS)
 
 Return('env')
 
