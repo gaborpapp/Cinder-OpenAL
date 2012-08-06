@@ -51,6 +51,7 @@ if (not GetOption('clean')):
 env.Append(APP_SOURCES = _SOURCES)
 env.Append(CPPPATH = _INCLUDES)
 env.Append(LIBS = _LIBS)
+env.Append(CCFLAGS = ["-DAL_LIBTYPE_STATIC"])
 
 Return('env')
 
