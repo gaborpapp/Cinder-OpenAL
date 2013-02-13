@@ -1,8 +1,7 @@
 Import('env')
 import os
 
-# FIXME: env should be created with the path, with this pkg-config is not found
-env.Append(PATH = os.environ['PATH'])
+env['ENV']['PATH'] = os.environ['PATH']
 
 _INCLUDES = [Dir('../src').abspath]
 
@@ -45,6 +44,13 @@ if (not GetOption('clean')):
             Exit(1)
         else:
             env.ParseConfig('pkg-config --cflags --libs %s' % (lib))
+
+	# replace libs with static libs on OS X
+	if env['PLATFORM'] == 'darwin':
+		for l in ['ogg', 'vorbis', 'vorbisfile']:
+			if l in env['LIBS']:
+				env['LIBS'].remove(l)
+			env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
 
     env = conf.Finish()
 
